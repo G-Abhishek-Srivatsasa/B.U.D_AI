@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>B.U.D. SECURITY PROTOCOL</title>
+    <!-- Sci-fi Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ff;
+            --success: #0f0;
+            --bg: #00050a;
+            --grid-color: rgba(0, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Ambient Background Grid */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: moveGrid 10s linear infinite;
+            z-index: -1;
+            box-shadow: inset 0 0 100px #000;
+        }
+
+        @keyframes moveGrid {
+            from {
+                transform: perspective(500px) rotateX(60deg) translateY(0);
+            }
+
+            to {
+                transform: perspective(500px) rotateX(60deg) translateY(50px);
+            }
+        }
+
+        /* Main Scanner Container */
+        .framework {
+            position: relative;
+            padding: 10px;
+            background: rgba(0, 20, 25, 0.8);
+            border: 2px solid #0ff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 5% 100%, 0 85%);
+        }
+
+        .scan-container {
+            position: relative;
+            width: 720px;
+            height: 540px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            background: #000;
+        }
+
+        /* Video Feed Styles */
+        #video-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* transform: scaleX(-1); Mirror */
+            filter: sepia(100%) hue-rotate(130deg) saturate(2) contrast(1.2);
+            /* Cyberpunk Blue */
+            opacity: 0.8;
+            transition: filter 0.5s ease;
+        }
+
+        /* Scanlines Overlay */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(to bottom,
+                    transparent 0px,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.5) 3px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* HUD Overlay */
+        .hud-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        /* Center Focus Reticle */
+        .reticle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 250px;
+            height: 250px;
+            transform: translate(-50%, -50%);
+            border: 2px dashed rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: spin 10s linear infinite;
+        }
+
+        .reticle::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spinReverse 5s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes spinReverse {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        /* Scanning Laser */
+        .laser-scanner {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: #0ff;
+            box-shadow: 0 0 15px #0ff;
+            top: 0;
+            animation: scanMove 2s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes scanMove {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            95% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Data Readouts */
+        .data-readout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--primary);
+            font-size: 12px;
+            text-align: right;
+            line-height: 1.5;
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        /* Status Text */
+        .status-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary);
+            padding: 10px 40px;
+            color: var(--primary);
+            font-size: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+        }
+
+        /* Top Message Box */
+        .top-message {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            color: var(--primary);
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--primary);
+            background: rgba(0, 20, 30, 0.8);
+            padding: 10px;
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+        }
+
+        /* Glitch Animation for Text */
+        @keyframes glitch {
+            0% {
+                text-shadow: 2px 2px #f0f, -2px -2px #0ff;
+            }
+
+            10% {
+                text-shadow: -2px 2px #f0f, 2px -2px #0ff;
+            }
+
+            20% {
+                text-shadow: 0 0 0;
+            }
+
+            100% {
+                text-shadow: 0 0 0;
+            }
+        }
+
+        .status-text {
+            animation: glitch 1s infinite alternate-reverse;
+        }
+
+        /* --- VERIFIED STATE --- */
+        .verified-state .reticle {
+            border-color: var(--success);
+            animation: none;
+            box-shadow: 0 0 30px var(--success);
+            background: rgba(0, 255, 0, 0.1);
+            transform: translate(-50%, -50%) scale(1.1);
+            transition: all 0.5s;
+        }
+
+        .verified-state .reticle::before {
+            border-color: var(--success);
+            animation: none;
+        }
+
+        .verified-state .laser-scanner {
+            display: none;
+        }
+
+        .verified-state #video-feed {
+            filter: none;
+            /* Full Color */
+        }
+
+        .verified-state .status-box {
+            border-color: var(--success);
+            color: var(--success);
+            box-shadow: 0 0 30px var(--success);
+            background: rgba(0, 20, 0, 0.8);
+        }
+
+        .verified-state .framework {
+            border-color: var(--success);
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+        }
+
+        /* Typing Effect for Random Data */
+        .random-code {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(0, 255, 255, 0.5);
+            font-size: 10px;
+            font-family: monospace;
+            white-space: pre;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="framework" id="main-frame">
+        <div class="scan-container">
+            <!-- Video -->
+            <img id="video-feed" src="{{ url_for('video_feed') }}" alt="Camera Feed">
+
+            <!-- Visual Effects -->
+            <div class="scanlines"></div>
+
+            <div class="hud-overlay" id="hud">
+                <div class="laser-scanner"></div>
+
+                <div class="reticle"></div>
+
+                <div class="data-readout">
+                    SECURE CONNECTION<br>
+                    ENCRYPTION: AES-256<br>
+                    PORT: 5000<br>
+                    IP: 127.0.0.1
+                </div>
+
+                <div class="top-message" id="top-message-box">
+                    <span id="top-msg-text">B.U.D IS SCANNING YOUR FACE</span>
+                </div>
+
+                <div class="random-code">
+                    0x4F 0x92 0x1A...
+                    Load: Vision...
+                    Check: Bio-Metric...
+                    01010010101...
+                </div>
+
+                <div class="status-box">
+                    <span class="status-text" id="status-text">INITIATING SCAN...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain / Random Code Effect
+        function updateRandomCode() {
+            const hex = "0123456789ABCDEF";
+            let output = "";
+            for (let i = 0; i < 8; i++) {
+                output += "0x" + hex[Math.floor(Math.random() * 16)] + hex[Math.floor(Math.random() * 16)] + "\n";
+            }
+            document.querySelector('.random-code').innerText =
+                "SYSTEM MONITORING\n-----------------\n" + output + "...\nTracking...";
+        }
+        setInterval(updateRandomCode, 100);
+
+        // API Polling
+        const interval = setInterval(() => {
+            fetch('/check_status')
+                .then(response => response.json())
+                .then(data => {
+
+                    // UPDATE UI TEXT BASED ON BACKEND MESSAGE
+                    const topMsg = document.getElementById('top-msg-text');
+                    const topBox = document.getElementById('top-message-box');
+
+                    if (data.message) {
+                        topMsg.innerText = data.message.toUpperCase();
+
+                        if (data.message.includes("Error")) {
+                            topBox.style.borderColor = "red";
+                            topBox.style.color = "red";
+                            topMsg.style.textShadow = "0 0 10px red";
+                        } else {
+                            topBox.style.borderColor = "var(--primary)";
+                            topBox.style.color = "var(--primary)";
+                            topMsg.style.textShadow = "0 0 10px var(--primary)";
+                        }
+                    }
+
+                    if (data.verified) {
+                        // 1. TRANSITION TO SUCCESS
+                        const frame = document.getElementById('main-frame');
+                        const statusText = document.getElementById('status-text');
+
+                        frame.classList.add('verified-state');
+                        statusText.innerText = "DONE";  // Changed to DONE per user request
+                        topMsg.innerText = "DONE";      // Update top text too
+
+                        statusText.style.animation = "none";
+
+                        clearInterval(interval);
+
+                        // 2. Play Sound (Optional trick: create audio context if browser allows)
+                        // ...
+
+                        // 3. Welcome Screen Transition
+                        setTimeout(() => {
+                            document.body.innerHTML = `
+                                <div style="text-align:center; animation: fadeUp 1s ease;">
+                                    <h1 style="color:#0f0; font-size: 60px; text-shadow:0 0 30px #0f0;">WELCOME ADMIN</h1>
+                                    <p style="color:#fff; letter-spacing:5px;">SYSTEMS ONLINE</p>
+                                </div>
+                            `;
+                        }, 2000);
+                    }
+                })
+                .catch(err => console.log("Waiting for server..."));
+        }, 500);
+    </script>
+
+</body>
+
+</html>
