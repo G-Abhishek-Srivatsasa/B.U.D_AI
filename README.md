@@ -1,7 +1,7 @@
 The file B.U.D_AI contains a main folder called B.U.D 
 Inside this folder , we'll see that we've two main folders(They are modules and templates)  , and 1 python file and other .txt file (They are main.py and requirement.txt) 
 **Remember** 
-1. In order to start the BUD AI one first download the complete B.U.D_AI folder
+1. In order to start the BUD AI one should first download the complete B.U.D_AI folder
 2. Then go to BUD folder and run the main.py file .
 3. If you're running it for the first time , then it would take some time to train itself with your face.
 4. Once its done training itself , you can now access all the features
