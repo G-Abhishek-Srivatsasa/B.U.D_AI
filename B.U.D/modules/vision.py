@@ -3,8 +3,12 @@ import os
 import numpy as np
 import math
 
+# --- PATH SETUP ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DATA_PATH = os.path.join(PROJECT_ROOT, "face_data")
+
 # Create a folder to store your face data
-DATA_PATH = "face_data"
 if not os.path.exists(DATA_PATH):
     os.makedirs(DATA_PATH)
 
@@ -75,17 +79,19 @@ def train_face():
         ids.append(1) 
 
     recognizer.train(faces, np.array(ids))
-    recognizer.write('trainer.yml')
-    print("[TRAINING] Complete.")
+    TRAINER_PATH = os.path.join(PROJECT_ROOT, 'trainer.yml')
+    recognizer.write(TRAINER_PATH)
+    print(f"[TRAINING] Complete. Saved to {TRAINER_PATH}")
 
 def scan_face():
-    if not os.path.exists('trainer.yml'):
-        print("Error: No training data found.")
+    TRAINER_PATH = os.path.join(PROJECT_ROOT, 'trainer.yml')
+    if not os.path.exists(TRAINER_PATH):
+        print(f"Error: No training data found at {TRAINER_PATH}")
         return False
 
     print("\n[SECURITY] Starting Face ID Scan...")
     recognizer = cv2.face.LBPHFaceRecognizer_create()
-    recognizer.read('trainer.yml')
+    recognizer.read(TRAINER_PATH)
     detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     cam = cv2.VideoCapture(0)
