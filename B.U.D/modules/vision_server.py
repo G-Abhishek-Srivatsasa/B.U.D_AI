@@ -13,11 +13,16 @@ scan_message = "B.U.D is scanning your face"
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+# --- PATH SETUP ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+TRAINER_PATH = os.path.join(PROJECT_ROOT, 'trainer.yml')
+
 # Load the trained model
-if os.path.exists('trainer.yml'):
-    recognizer.read('trainer.yml')
+if os.path.exists(TRAINER_PATH):
+    recognizer.read(TRAINER_PATH)
 else:
-    print("WARNING: No training data found! Run vision.py first.")
+    print(f"WARNING: No training data found at {TRAINER_PATH}! Run vision.py first.")
 
 def generate_frames():
     global is_verified, camera, scan_message
