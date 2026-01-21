@@ -5,8 +5,17 @@ import os
 
 # Voice Selection: 'en-US-ChristopherNeural' is a great male voice.
 # You can swap this for 'en-US-AriaNeural' if you prefer a female voice.
-VOICE = "en-GB-RyanNeural"
-BUFFER_FILE = "bud_speech.mp3"
+VOICE = "en-US-ChristopherNeural"
+# --- PATH SETUP ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+BUFFER_FILE = os.path.join(PROJECT_ROOT, "bud_speech.mp3")
+
+# Init mixer once on load to save time
+try:
+    pygame.mixer.init()
+except:
+    pass
 
 async def _generate_audio(text):
     """Helper function to fetch audio from Edge TTS"""
@@ -25,7 +34,7 @@ def speak(text):
 
     # 2. Play the audio using Pygame
     try:
-        pygame.mixer.init()
+        # Mixer is already initialized globally
         pygame.mixer.music.load(BUFFER_FILE)
         pygame.mixer.music.play()
 
@@ -37,13 +46,14 @@ def speak(text):
         print(f"Error playing audio: {e}")
     
     finally:
-        # 3. Cleanup: Stop the mixer and delete the temp file
-        pygame.mixer.quit()
+        # 3. Cleanup: Stop but DO NOT QUIT mixer (keep it hot)
+        pygame.mixer.music.stop()
+        pygame.mixer.music.unload()
         if os.path.exists(BUFFER_FILE):
             try:
                 os.remove(BUFFER_FILE)
             except PermissionError:
-                pass # Sometimes Windows holds the file for a split second longer
+                pass
 
 if __name__ == "__main__":
     print("Testing B.U.D.'s voice...")
